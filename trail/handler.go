@@ -12,15 +12,15 @@ func rootHandler(cmd *cobra.Command, args []string) {
 	reader := Reader{path: inputProto}
 	record := reader.yamlReader()
 
-    // log record to stdout
+	// log record to stdout
 	for idx, element := range record.Calls {
 		fmt.Println(idx, element.Id)
 	}
 
 	jsonMap := make(map[string]interface{})
 
-    var wg sync.WaitGroup
-    wg.Add(1)
-    go Predict(jsonMap)
-    wg.Wait()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go Predict(jsonMap)
+	wg.Wait()
 }

@@ -1,13 +1,13 @@
 package main
 
 import (
-    "os"
-    "encoding/csv"
+	"encoding/csv"
 	"google.golang.org/protobuf/proto"
 	"io/ioutil"
 	"log"
+	"os"
 	pb "trail/trail/protos"
-    // fsm "***REMOVED***/services"
+	// fsm "***REMOVED***/services"
 )
 
 type Reader struct {
@@ -25,11 +25,11 @@ func (reader Reader) yamlReader() *pb.CallDataFrame {
 		log.Fatalln("Failed to parse address book:", err)
 	}
 
-    return record
+	return record
 
 }
 
-func (reader Reader) csvReader() [][] string {
+func (reader Reader) csvReader() [][]string {
 	f, err := os.Open(reader.path)
 	if err != nil {
 		log.Fatal("Unable to read input file "+reader.path, err)
