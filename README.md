@@ -2,6 +2,10 @@
 
 CLI to run your dataframes against different services.
 
+## Dependencies
+
+TODO: Add `fsm-service/v3` installation here
+
 ## Usage
 
 ```
