@@ -22,7 +22,7 @@ func (reader Reader) yamlReader() *pb.CallDataFrame {
 
 	record := &pb.CallDataFrame{}
 	if err := proto.Unmarshal(in, record); err != nil {
-		log.Fatalln("Failed to parse address book:", err)
+		log.Fatalln("Failed to parse call dataframe:", err)
 	}
 
 	return record
