@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package records;
+
+option go_package = "/;dataframes";
+
+
+/* Representation of one full call */
+message Call {
+  string id = 1;                // UUID generated during call creation in the
+                                // runtime system
+  string created_at = 3;        // The time when the call was created
+  string virtual_number = 5;    // Receiving phone number
+  string audio_url = 6;         // For full call audio.
+  float duration = 8;           // The duration of the call.
+  string flow_version = 9;      // Describes which user goal (inclusive of iterations within the goal) was being followed in the call.
+  repeated Turn turns = 10;     // List of interactions between the machine and human. A single interaction is a turn.
+}
+
+/* A turn is an interaction either from the machine or a person. */
+message Turn {
+  string id = 1;                        // UUID generated during turn creation in the runtime system.
+  string created_at = 3;                // The tiem when the turn was created.
+  enum Type {                           // Types of defined interactions
+    UNKNOWN = 0;
+    ACTION = 1;
+    INPUT = 2;                          // A human speaker provided an input.
+    RESPONSE = 3;                       // A machine generated response. 
+    VALIDATION = 4;
+  }
+  Type type = 4;                          // Type of turn. For ML we are mostly
+                                          // interested in `INPUT` and sub_type
+                                          // `AUDIO`.
+  string sub_type = 5;                    // If the input was from a human speaker, then was it speech or DTMF?
+  string text = 6;                        // Top level representative text for
+                                          // the turn from the utterances.
+  repeated Utterance utterances = 7;      // List of utterances from ASR
+  string audio_url = 8;                   // Path to turn audio.
+  string state = 10;                      // State of the turn in the call flow.
+  string asr_context = 11 ;               // Context identifiers passed to the
+                                          // ASR.
+  string asr_provider = 12;
+  string language = 13;                   // Native language of the bot
+  Prediction prediction = 14;             // Prediction made from the system
+                                          // during the actual call.
+}
+
+message Prediction {
+  repeated Intent intents = 1;
+}
+
+message Range {
+  uint32 start = 1;
+  uint32 end = 2;        
+}
+
+message Intent {
+  string name = 1;
+  float score = 2;
+  message Slot {
+    string name = 1;
+    repeated string type = 2;
+    message Value {
+      string body = 1;
+      string type = 2;
+      uint32 alternative_id = 3;
+      oneof value {
+        int64 int_value = 4;
+        float float_value = 5;
+        string string_value = 6;
+      }
+      Range range = 7;
+    }
+    repeated Value values = 3;
+  }
+  repeated Slot slots = 3;
+}
+
+
+message Utterance {
+  message Alternative {
+    string transcript = 1;
+    float confidence = 2;
+    float am_score = 3;
+    float lm_score = 4;
+  }
+  repeated Alternative alternatives = 1;
+}
+
+message CallDataFrame {
+  repeated Call calls = 1;
+}
+
+message TurnDataFrame {
+  repeated Turn turns = 1;
+}

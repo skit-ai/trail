@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package labels;
+
+option go_package = "/;dataframes";
+
+import "google/protobuf/any.proto";
+import "records.proto";
+
+/* A simple intent annotation. Intents here are from a fixed set. For marking
+   absence of an intent, we use null. We skip label if item is untagged. */
+message IntentLabel {
+  string id = 1;
+  string intent = 2;
+}
+
+/* Similar to intent but allows richer labels. Two common patterns are described
+   below:
+
+   1. Multiple intents: {"op": "AND", "items": [{"intent": "<>": "score": "<>"},
+      ...]}
+
+   2. Ranked intents: [{"intent": "<>": "score": "<>"}, {"intent": "<>":
+      "score": "<>"}, ...] */
+message RichIntentLabel {
+  string id = 1;
+  google.protobuf.Any rich_intents = 2;
+}
+
+/* Entities or slots. Can merge multiple entities in one. If they are
+   independent, it's recommended to make new layer. */
+message EntityLabel {
+  string id = 1;
+  repeated Entity entities = 2;
+}
+
+/* An entity definition. */
+message Entity {
+  string type = 1;
+  float score = 2;
+  google.protobuf.Any value = 3;  // Null here means that this entity is not present
+}
+
+/* Similar to rich intents. Common patterns are described below:
+
+   1. Multiple entities: {"op": "AND", "items": [<Entity>, ...]}
+
+   2. Ranked entities: [<Entity>, <Entity> ...] */
+message RichEntityLabel {
+  string id = 1;
+  google.protobuf.Any rich_entities = 3;
+}
+
+/* Plain transcription label */
+message TranscriptionLabel {
+  string id = 1;
+  string transcription = 2;
+}
+
+/* Ranked transcription label. This is similar to the ones coming from model
+   predictions. */
+message RichTranscriptionLabel {
+  string id = 1;
+  repeated records.Utterance utterances = 2;
+}
+
+message LabeledDataFrame {
+  repeated IntentLabel intents = 1;
+  repeated EntityLabel entities = 2;
+  repeated TranscriptionLabel transcriptions = 3;
+}
