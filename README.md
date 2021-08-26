@@ -6,6 +6,8 @@ CLI to run your dataframes against different services.
 
 TODO: Add `***REMOVED***` installation here
 
+- `go mod download`
+
 ## Usage
 
 ```
@@ -25,7 +27,9 @@ Flags:
   -h, --help   help for trail
 ```
 
-#### Follow call dataframe against SLU service
+### Usage patterns
+
+**1. Follow call dataframe against SLU service**
 
 ```
 trail follow --input-proto records.pb
