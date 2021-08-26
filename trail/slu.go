@@ -13,12 +13,12 @@ import (
 )
 
 var (
-    labledDataframe dataframes.LabeledDataFrame
+	labledDataframe dataframes.LabeledDataFrame
 )
 
 func Predict(jsonMap map[string]interface{}) {
 	plan, _ := ioutil.ReadFile("request.json")
-    err := json.Unmarshal(plan, &jsonMap)
+	err := json.Unmarshal(plan, &jsonMap)
 	if err != nil {
 		log.Fatal("Unable to unmarshal json")
 	}
@@ -28,8 +28,8 @@ func Predict(jsonMap map[string]interface{}) {
 	if err != nil {
 		log.Fatal(err)
 	}
-    for idx, intent := range sluResponse.Prediction.Intents {
-	    fmt.Println(idx, intent.Name)
-    }
+	for idx, intent := range sluResponse.Prediction.Intents {
+		fmt.Println(idx, intent.Name)
+	}
 	fmt.Println(predictionResponse.Prediction.RawMessage)
 }

@@ -10,7 +10,7 @@ var (
 
 func main() {
 
-    // follow command
+	// follow command
 	var cmdFollow = &cobra.Command{
 		Use:   "follow <args>",
 		Short: "Follow a path for a dataframe",
