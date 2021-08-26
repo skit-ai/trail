@@ -17,10 +17,11 @@ func rootHandler(cmd *cobra.Command, args []string) {
 		fmt.Println(idx, element.Id)
 	}
 
-	jsonMap := make(map[string]interface{})
+	// jsonMap := make(map[string]interface{})
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go Predict(jsonMap)
+	// go Predict(jsonMap)
+	go runFlowTest(record)
 	wg.Wait()
 }
