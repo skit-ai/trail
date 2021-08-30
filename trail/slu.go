@@ -3,33 +3,56 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
-
-	services "fsm-service/v3/services"
-	dataframes "trail/trail/protos"
+	"net/http"
 )
 
 var (
-	labledDataframe dataframes.LabeledDataFrame
+	predict_api = "%s/predict/%s/%s/"
 )
 
-func Predict(jsonMap map[string]interface{}) {
-	plan, _ := ioutil.ReadFile("request.json")
-	err := json.Unmarshal(plan, &jsonMap)
+type SLU struct {
+	HOST string
+}
+
+type SLUResponse struct {
+	Uuid     string `json:"uuid"`
+	Response struct {
+		Entities []interface{} `json:"entities"`
+		Intents  []interface{} `json:"intents"`
+	} `json:"response"`
+}
+
+func NewSLUClient(host string) *SLU {
+	return &SLU{
+		HOST: host,
+	}
+}
+
+func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) {
+	jsonData, err := json.Marshal(sluRequestBody)
+	requestUrl := fmt.Sprintf(predict_api, slu.HOST, sluLanguage, sluClient)
+	response, err := http.Post(requestUrl, "application/json", bytes.NewReader(jsonData))
+
+	log.Printf("Getting predictions for UUID: %s ", sluRequestBody.Context.CallUuid)
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal("Unable to unmarshal json")
+		fmt.Println(err)
+		return
 	}
 
-	sluClient := services.Plute{HOST: "http://localhost:6969"}
-	sluResponse, predictionResponse, _, err := sluClient.Predict("en", "indigo_slu", jsonMap, true)
+	sluResponse := SLUResponse{
+		Uuid: sluRequestBody.Context.Uuid,
+	}
+	err = json.Unmarshal(body, &sluResponse)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error happened", err)
 	}
-	for idx, intent := range sluResponse.Prediction.Intents {
-		fmt.Println(idx, intent.Name)
-	}
-	fmt.Println(predictionResponse.Prediction.RawMessage)
+
+	outputChannel <- sluResponse
+	defer wg.Done()
 }
