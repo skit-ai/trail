@@ -5,15 +5,11 @@ import (
 	"encoding/json"
 	"io"
 
-	// "encoding/json"
-
-	"io/ioutil"
 	"log"
 	"os"
 	pb "trail/trail/protos"
 
 	"google.golang.org/protobuf/proto"
-	// fsm "***REMOVED***/services"
 )
 
 type Reader struct {
@@ -35,7 +31,7 @@ type ListRequests struct {
 }
 
 func (reader Reader) yamlReader() *pb.CallDataFrame {
-	in, err := ioutil.ReadFile(reader.path)
+	in, err := os.ReadFile(reader.path)
 	if err != nil {
 		log.Fatalln("Error reading file:", err)
 	}
