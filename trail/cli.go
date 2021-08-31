@@ -43,7 +43,7 @@ func main() {
 	// Optional flags
 	cmdFollow.PersistentFlags().StringVar(&outputIntentsCsv, "output-intents-csv", "", "output intents csv file")
 	cmdFollow.PersistentFlags().StringVar(&outputEntitiesCsv, "output-entities-csv", "", "output entities csv file")
-	cmdFollow.PersistentFlags().IntVar(&maxGoroutines, "concurrency", 30, "Max concurrent requests to SLU service (optional, default: 30)")
+	cmdFollow.PersistentFlags().IntVar(&maxGoroutines, "concurrency", 30, "Max concurrent requests to SLU service (optional)")
 
 	rootCmd.AddCommand(cmdFollow)
 	rootCmd.Execute()
