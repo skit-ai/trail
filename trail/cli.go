@@ -5,11 +5,13 @@ import (
 )
 
 var (
-	inputCsv    string
-	outputCsv   string
-	sluHost     string
-	sluClient   string
-	sluLanguage string
+	inputCsv          string
+	outputIntentsCsv  string
+	outputEntitiesCsv string
+	sluHost           string
+	sluClient         string
+	sluLanguage       string
+	maxGoroutines     int
 )
 
 func main() {
@@ -24,11 +26,10 @@ func main() {
 		},
 	}
 	var rootCmd = &cobra.Command{Use: "trail"}
+
+	// Mandatory flags
 	cmdFollow.PersistentFlags().StringVar(&inputCsv, "input-csv", "", "input csv file (required)")
 	cmdFollow.MarkPersistentFlagRequired("input-csv")
-
-	cmdFollow.PersistentFlags().StringVar(&outputCsv, "output-csv", "", "output csv file (required)")
-	cmdFollow.MarkPersistentFlagRequired("output-csv")
 
 	cmdFollow.PersistentFlags().StringVar(&sluHost, "slu-host", "", "http://host:port for SLU service (required)")
 	cmdFollow.MarkPersistentFlagRequired("slu-host")
@@ -38,6 +39,11 @@ func main() {
 
 	cmdFollow.PersistentFlags().StringVar(&sluLanguage, "slu-language", "", "Language code. Example: en, hi (required)")
 	cmdFollow.MarkPersistentFlagRequired("slu-language")
+
+	// Optional flags
+	cmdFollow.PersistentFlags().StringVar(&outputIntentsCsv, "output-intents-csv", "", "output intents csv file")
+	cmdFollow.PersistentFlags().StringVar(&outputEntitiesCsv, "output-entities-csv", "", "output entities csv file")
+	cmdFollow.PersistentFlags().IntVar(&maxGoroutines, "concurrency", 30, "Max concurrent requests to SLU service (optional, default: 30)")
 
 	rootCmd.AddCommand(cmdFollow)
 	rootCmd.Execute()
