@@ -6,6 +6,8 @@ CLI to run your dataframes against different services (currently, SLU service).
 
 - `go mod download`
 
+TODO: Make it easier to setup and generate binaries
+
 ## Usage
 
 ```
@@ -30,6 +32,10 @@ Flags:
       --slu-host string              http://host:port for SLU service (required)
       --slu-language string          Language code. Example: en, hi (required)
 ```
+
+## Binaries
+
+Check binaries in v0.1.0 release tag
 
 ### Usage patterns
 
