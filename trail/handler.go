@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -14,30 +15,59 @@ var (
 	wg sync.WaitGroup
 )
 
+type StdOutResponse struct {
+	Response []*SLUResponse
+}
+
+// Generic panic handler
 func panicHandler() {
 	if err := recover(); err != nil {
 		log.Println("Could not get predictions:", err)
 	}
 }
 
-func writeOutput(src chan SLUResponse) {
-	fp, err := os.OpenFile(outputCsv, os.O_CREATE|os.O_RDWR, 0666)
-	if err != nil {
-		panic(err)
-	}
-	writer := csv.NewWriter(fp)
-	defer writer.Flush()
-	defer fp.Close()
+// writeOutput - Write output from SLU service to CSV
+func writeOutput(sluResponse []SLUResponse) {
+	var intentsWriter, entitiesWriter *csv.Writer
 
-	for msg := range src {
+	if outputIntentsCsv != "" {
+		intentsFp, err := os.OpenFile(outputIntentsCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+		defer intentsFp.Close()
+		intentsWriter = csv.NewWriter(intentsFp)
+		defer intentsWriter.Flush()
+		if err != nil {
+			panic(err)
+		}
+	}
+	if outputEntitiesCsv != "" {
+		entitiesFp, err := os.OpenFile(outputEntitiesCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+		defer entitiesFp.Close()
+		entitiesWriter = csv.NewWriter(entitiesFp)
+		defer entitiesWriter.Flush()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	for _, msg := range sluResponse {
 		entities, err := json.Marshal(msg.Response.Entities)
 		intents, err := json.Marshal(msg.Response.Intents)
 		if err != nil {
 			log.Fatalln("Could not Marshal ", err)
 		}
-		record := []string{msg.Uuid, string(entities), string(intents)}
-		if err := writer.Write(record); err != nil {
-			log.Fatalln("Error writing record to file", err)
+		intentsRecord := []string{msg.Uuid, string(intents)}
+		entitiesRecord := []string{msg.Uuid, string(entities)}
+
+		if outputIntentsCsv != "" && len(msg.Response.Intents) >= 1 {
+			if err := intentsWriter.Write(intentsRecord); err != nil {
+				log.Fatalln("Error writing record to file", err)
+			}
+		}
+
+		if outputEntitiesCsv != "" && len(msg.Response.Entities) >= 1 {
+			if err := entitiesWriter.Write(entitiesRecord); err != nil {
+				log.Fatalln("Error writing record to file", err)
+			}
 		}
 	}
 }
@@ -51,24 +81,25 @@ func rootHandler(cmd *cobra.Command, args []string) {
 	outputChannel := make(chan SLUResponse)
 
 	log.Println("Making requests to SLU service")
-	maxGoroutines := 10
+	stdOutResponse := make([]SLUResponse, len(record.RequestBody))
+
 	guard := make(chan struct{}, maxGoroutines)
 
-	for _, item := range record.RequestBody {
+	for idx, item := range record.RequestBody {
 		wg.Add(1)
 		guard <- struct{}{} // would block if guard channel is already filled
-		go func(outputChannel chan SLUResponse, item SLURequestBody) {
-			go sluClient.Predict(outputChannel, item)
+		go func(outputChannel chan SLUResponse, item SLURequestBody, idx int) {
+			sluResponse := sluClient.Predict(outputChannel, item)
+			stdOutResponse[idx] = sluResponse
+
+			defer wg.Done()
 			<-guard
-		}(outputChannel, item)
-		// go sluClient.Predict(outputChannel, item)
+		}(outputChannel, item, idx)
 	}
 
-	go func() {
-		wg.Wait()
-		close(outputChannel)
-	}()
+	wg.Wait()
+	writeOutput(stdOutResponse)
 
-	writeOutput(outputChannel)
-	log.Printf("Predictions exported at: %s", outputCsv)
+	jsonData, _ := json.MarshalIndent(stdOutResponse, "", "    ")
+	fmt.Println(string(jsonData))
 }
