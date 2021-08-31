@@ -33,26 +33,40 @@ func NewSLUClient(host string) *SLU {
 	}
 }
 
-func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) {
+// Call SLU service /predic/ endpoint
+func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) SLUResponse {
+	defer panicHandler()
 	jsonData, err := json.Marshal(sluRequestBody)
+	method := "POST"
+	client := &http.Client{}
 	requestUrl := fmt.Sprintf(predict_api, slu.HOST, sluLanguage, sluClient)
-	response, err := http.Post(requestUrl, "application/json", bytes.NewReader(jsonData))
+	sluResponse := SLUResponse{
+		Uuid: sluRequestBody.Context.Uuid,
+	}
+
+	req, err := http.NewRequest(method, requestUrl, bytes.NewReader(jsonData))
+	req.Close = true
+	req.Header.Add("Content-Type", "application/json")
+
+	response, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return sluResponse
+	}
+	defer response.Body.Close()
 
 	log.Printf("Getting predictions for UUID: %s ", sluRequestBody.Context.CallUuid)
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
 
-	sluResponse := SLUResponse{
-		Uuid: sluRequestBody.Context.Uuid,
-	}
 	err = json.Unmarshal(body, &sluResponse)
 	if err != nil {
-		log.Fatal("error happened", err)
+		log.Println("Could not unmarshal", err)
 	}
 
-	outputChannel <- sluResponse
-	defer wg.Done()
+	// outputChannel <- sluResponse
+	// defer wg.Done()
+	return sluResponse
 }
