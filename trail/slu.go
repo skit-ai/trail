@@ -33,7 +33,7 @@ func NewSLUClient(host string) *SLU {
 	}
 }
 
-// Call SLU service /predic/ endpoint
+// Call SLU service /predict/ endpoint
 func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) SLUResponse {
 	defer panicHandler()
 	jsonData, err := json.Marshal(sluRequestBody)
