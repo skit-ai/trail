@@ -69,7 +69,7 @@ func writeOutput(sluResponse []SLUResponse) {
 			for idx, intent := range msg.Response.Intents {
 				if intent.Score > maxScore {
 					intentIdx = idx
-                    maxScore = intent.Score
+					maxScore = intent.Score
 				}
 			}
 			csvIntent := CsvIntent{Name: msg.Response.Intents[intentIdx].Name}
