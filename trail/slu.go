@@ -22,8 +22,30 @@ type SLU struct {
 type SLUResponse struct {
 	Uuid     string `json:"uuid"`
 	Response struct {
-		Entities []interface{} `json:"entities"`
-		Intents  []interface{} `json:"intents"`
+		Entities []struct {
+			Text             string                 `json:"body"`
+			Type             string                 `json:"type"`
+			Score            float64                `json:"score"`
+			Value            interface{}            `json:"value"`
+			Values           []interface{}          `json:"values"`
+			AlternativeIndex int                    `json:"alternative_index"`
+			Dim              string                 `json:"dim"`
+			EntityType       string                 `json:"entity_type"`
+			Latent           bool                   `json:"latent"`
+			Parsers          []string               `json:"parsers"`
+			Range            map[string]interface{} `json:"range"`
+			SlotNames        []string               `json:"slot_names"`
+			Meta             struct{}               `json:"_meta"`
+		} `json:"entities"`
+		Intents []struct {
+			Name             string        `json:"name"`
+			AlternativeIndex int           `json:"alternative_index"`
+			Parsers          []interface{} `json:"parsers"`
+			Score            float64       `json:"score"`
+			Slots            []interface{} `json:"slots"`
+		} `json:"intents"`
+		// Entities []interface{} `json:"entities"`
+		// Intents  []interface{} `json:"intents"`
 	} `json:"response"`
 }
 

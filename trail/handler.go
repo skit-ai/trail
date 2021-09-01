@@ -19,6 +19,17 @@ type StdOutResponse struct {
 	Response []*SLUResponse
 }
 
+type CsvIntent struct {
+	Name string
+}
+
+type CsvEntity struct {
+	Text  string      `json:"text"`
+	Type  string      `json:"type"`
+	Score float64     `json:"score"`
+	Value interface{} `json:"value"`
+}
+
 // Generic panic handler
 func panicHandler() {
 	if err := recover(); err != nil {
@@ -50,21 +61,38 @@ func writeOutput(sluResponse []SLUResponse) {
 	}
 
 	for _, msg := range sluResponse {
-		entities, err := json.Marshal(msg.Response.Entities)
-		intents, err := json.Marshal(msg.Response.Intents)
-		if err != nil {
-			log.Fatalln("Could not Marshal ", err)
-		}
-		intentsRecord := []string{msg.Uuid, string(intents)}
-		entitiesRecord := []string{msg.Uuid, string(entities)}
-
+		// Log intent in CSV
 		if outputIntentsCsv != "" && len(msg.Response.Intents) >= 1 {
+			// Get intent with max score
+			var maxScore float64 = 0
+			intentIdx := 0
+			for idx, intent := range msg.Response.Intents {
+				if intent.Score > maxScore {
+					intentIdx = idx
+				}
+			}
+			csvIntent := CsvIntent{Name: msg.Response.Intents[intentIdx].Name}
+
+			intentsRecord := []string{msg.Uuid, csvIntent.Name}
 			if err := intentsWriter.Write(intentsRecord); err != nil {
 				log.Fatalln("Error writing record to file", err)
 			}
 		}
 
 		if outputEntitiesCsv != "" && len(msg.Response.Entities) >= 1 {
+			csvEntityList := make([]CsvEntity, len(msg.Response.Entities))
+			for idx, entity := range msg.Response.Entities {
+				// value, _ := json.Marshal(entity.Value)
+				csvEntity := CsvEntity{Text: entity.Text, Type: entity.Type, Score: entity.Score, Value: entity.Value}
+				csvEntityList[idx] = csvEntity
+			}
+
+			entities, err := json.Marshal(csvEntityList)
+			if err != nil {
+				log.Fatalln("Could not Marshal ", err)
+			}
+
+			entitiesRecord := []string{msg.Uuid, string(entities)}
 			if err := entitiesWriter.Write(entitiesRecord); err != nil {
 				log.Fatalln("Error writing record to file", err)
 			}
