@@ -29,12 +29,13 @@ def get_labeled_items(data, type_):
     with open(f"{type_}_label.csv", "w") as fp:
         writer = csv.writer(fp)
         for record in records:
-            writer.writerow([record["uuid"], label_func.get(record["response"][type_])])
+            label_func = label_func_map.get(type_)
+            writer.writerow([record["uuid"], label_func(record["response"][type_])])
 
 
 if __name__ == "__main__":
     data = json.loads(sys.stdin.read())
-    label_func = {
+    label_func_map = {
         "intents": _generate_intent_labels,
         "entities": _generate_entity_labels
     }
