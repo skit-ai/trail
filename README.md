@@ -35,7 +35,7 @@ Flags:
 
 ## Binaries
 
-Check binaries in v0.1.0 release tag
+Get the latest binaries [here][binaries]
 
 ### Usage patterns
 
@@ -66,4 +66,5 @@ Sample Python script to generate label files by piping response from the command
 
 
 [gen-labels]: ./scripts/gen_label_files.py
+[binaries]: https://github.com/skit-ai/trail/releases/
 
