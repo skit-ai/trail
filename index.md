@@ -1,37 +1,68 @@
-## Welcome to GitHub Pages
+# trail
 
-You can use the [editor on GitHub](https://github.com/skit-ai/trail/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+CLI to run your dataframes against different services (currently, SLU service).
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Dependencies
 
-### Markdown
+- `go mod download`
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+TODO: Make it easier to setup and generate binaries
 
-```markdown
-Syntax highlighted code block
+## Usage
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```
+go install trail/*.go
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+`trail follow --help`
 
-### Jekyll Themes
+```
+Follow a dataframe and get predicted dataframes against your service config
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/skit-ai/trail/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Usage:
+  trail follow <args> [flags]
 
-### Support or Contact
+Flags:
+      --concurrency int              Max concurrent requests to SLU service (optional) (default 30)
+  -h, --help                         help for follow
+      --input-csv string             input csv file (required)
+      --output-entities-csv string   output entities csv file
+      --output-intents-csv string    output intents csv file
+      --slu-client string            Name of the client (required)
+      --slu-host string              http://host:port for SLU service (required)
+      --slu-language string          Language code. Example: en, hi (required)
+```
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+## Binaries
+
+Check binaries in v0.1.0 release tag
+
+### Usage patterns
+
+#### Follow call dataframe (CSV) against SLU service and export
+
+##### Export both intents and entities labels in CSV
+
+```
+trail follow --input-csv records.csv --slu-host http://localhost:6969 --slu-language en --slu-client client_slu --output-intents-csv ./intents.csv --output-entities-csv ./entities.csv --concurrency 30
+```
+
+##### Export either of intents or entities labels in CSV
+
+provide `--output-intents-csv` or `--output-entities-csv` as appropriate.
+
+```
+trail follow --input-csv records.csv --slu-host http://localhost:6969 --slu-language en --slu-client client_slu --output-intents-csv ./intents.csv --output-entities-csv ./entities.csv --concurrency 30
+```
+
+
+##### Export SLU service response and generate your own label files
+
+```
+trail follow --input-csv records.csv --slu-host http://localhost:6969 --slu-language en --slu-client client_slu --output-intents-csv ./intents.csv --output-entities-csv ./entities.csv --concurrency 30 | ./scripts/gen_label_files.py
+```
+
+Sample Python script to generate label files by piping response from the command at [gen_label_files.py][gen-labels]
+
+
+[gen-labels]: https://github.com/skit-ai/trail/blob/master/scripts/gen_label_files.py
