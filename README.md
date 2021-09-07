@@ -1,6 +1,6 @@
 # trail
 
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Vernacular-ai/dataframes?style=flat-square)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/skit-ai/trail?style=flat-square)
 
 CLI to run your [dataframes][dataframes] against different services (currently, [SLU service][slu-service]).
 
