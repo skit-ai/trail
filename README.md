@@ -1,6 +1,6 @@
 # trail
 
-CLI to run your dataframes against different services (currently, SLU service).
+CLI to run your dataframes against different services (currently, [SLU service][slu-service]).
 
 ## Dependencies
 
@@ -67,4 +67,4 @@ Sample Python script to generate label files by piping response from the command
 
 [gen-labels]: ./scripts/gen_label_files.py
 [binaries]: https://github.com/skit-ai/trail/releases/
-
+[slu-service]: https://github.com/skit-ai/slu-service/
