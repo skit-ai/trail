@@ -1,6 +1,8 @@
 # trail
 
-CLI to run your dataframes against different services (currently, SLU service).
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/skit-ai/trail?style=flat-square)
+
+CLI to run your [dataframes][dataframes] against different services (currently, [SLU service][slu-service]).
 
 ## Dependencies
 
@@ -35,7 +37,7 @@ Flags:
 
 ## Binaries
 
-Check binaries in v0.1.0 release tag
+Get the latest binaries [here][binaries]
 
 ### Usage patterns
 
@@ -65,4 +67,7 @@ trail follow --input-csv records.csv --slu-host http://localhost:6969 --slu-lang
 Sample Python script to generate label files by piping response from the command at [gen_label_files.py][gen-labels]
 
 
-[gen-labels]: https://github.com/skit-ai/trail/blob/master/scripts/gen_label_files.py
+[gen-labels]: ./scripts/gen_label_files.py
+[binaries]: https://github.com/skit-ai/trail/releases/
+[slu-service]: https://github.com/skit-ai/slu-service/
+[dataframes]: https://github.com/skit-ai/dataframes
