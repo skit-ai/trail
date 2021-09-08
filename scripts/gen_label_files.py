@@ -26,8 +26,9 @@ def _generate_entity_labels(entities):
 def get_labeled_items(data, type_):
     records = filter(lambda d: d["response"].get(type_), data)
 
-    with open(f"{type_}_label.csv", "w") as fp:
+    with open(f"{BASE_PATH}/predicted.{type_}.csv", "w") as fp:
         writer = csv.writer(fp)
+        writer.writerow(columns_map[type_])
         for record in records:
             label_func = label_func_map.get(type_)
             writer.writerow([record["uuid"], label_func(record["response"][type_])])
@@ -35,9 +36,14 @@ def get_labeled_items(data, type_):
 
 if __name__ == "__main__":
     data = json.loads(sys.stdin.read())
+    BASE_PATH = "."
     label_func_map = {
         "intents": _generate_intent_labels,
         "entities": _generate_entity_labels
+    }
+    columns_map = {
+        "intents": ["id", "preds"],
+        "entities": ["id", "entity"],
     }
 
     get_labeled_items(data, type_="intents")
