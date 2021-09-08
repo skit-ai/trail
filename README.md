@@ -6,8 +6,8 @@ CLI to run your [dataframes][dataframes] against different services (currently, 
 
 ## Setup
 
-Get the latest binaries from the releases [here][binaries]. Choose the appropriate
-based on your machine's OS and architecture.
+Get the latest binaries from the releases [here][binaries]. Choose the
+appropriate binary based on your machine's OS and architecture.
 
 ## Usage
 
