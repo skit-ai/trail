@@ -4,17 +4,12 @@
 
 CLI to run your [dataframes][dataframes] against different services (currently, [SLU service][slu-service]).
 
-## Dependencies
+## Setup
 
-- `go mod download`
-
-TODO: Make it easier to setup and generate binaries
+Get the latest binaries from the releases [here][binaries]. Choose the
+appropriate binary based on your machine's OS and architecture.
 
 ## Usage
-
-```
-go install trail/*.go
-```
 
 `trail follow --help`
 
@@ -35,11 +30,7 @@ Flags:
       --slu-language string          Language code. Example: en, hi (required)
 ```
 
-## Binaries
-
-Get the latest binaries [here][binaries]
-
-### Usage patterns
+## Usage patterns
 
 #### Follow call dataframe (CSV) against SLU service and export
 
@@ -65,6 +56,21 @@ trail follow --input-csv records.csv --slu-host http://localhost:6969 --slu-lang
 ```
 
 Sample Python script to generate label files by piping response from the command at [gen_label_files.py][gen-labels]
+
+
+## Development
+
+- Install dependencies
+
+```
+go mod download
+```
+
+- Build binary
+
+```
+go install trail/*.go
+```
 
 
 [gen-labels]: ./scripts/gen_label_files.py
