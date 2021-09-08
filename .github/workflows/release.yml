@@ -12,7 +12,9 @@ jobs:
         goarch: ["386", amd64, arm]
         exclude:  
           - goarch: "386"
-            goos: darwin 
+            goos: darwin
+          - goarch: arm
+            goos: darwin
     steps:
     - uses: actions/checkout@v2
     - uses: wangyoucao577/go-release-action@v1.20
@@ -23,4 +25,3 @@ jobs:
         goversion: "https://dl.google.com/go/go1.17.linux-amd64.tar.gz"
         project_path: "./trail/"
         binary_name: "trail"
-        extra_files: LICENSE README.md
