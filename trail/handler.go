@@ -45,6 +45,10 @@ func writeOutput(sluResponse []SLUResponse) {
 		intentsFp, err := os.OpenFile(outputIntentsCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		defer intentsFp.Close()
 		intentsWriter = csv.NewWriter(intentsFp)
+		intentsHeader := []string{"id", "preds"}
+		if err := intentsWriter.Write(intentsHeader); err != nil {
+			log.Fatalln("Error writing record to file", err)
+		}
 		defer intentsWriter.Flush()
 		if err != nil {
 			panic(err)
