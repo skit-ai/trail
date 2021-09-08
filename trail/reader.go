@@ -71,7 +71,14 @@ func (reader Reader) csvReader() ListRequests {
 
 		// Get alternatives
 		var data []interface{}
-		err = json.Unmarshal([]byte(record[2]), &data)
+		var alternatives string
+		if record[2] == "" {
+			alternatives = "[]"
+		} else {
+			alternatives = record[2]
+		}
+
+		err = json.Unmarshal([]byte(alternatives), &data)
 		if err != nil {
 			log.Fatal("error happened", err)
 		}
