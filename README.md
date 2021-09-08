@@ -39,7 +39,7 @@ Flags:
 
 Get the latest binaries [here][binaries]
 
-### Usage patterns
+## Usage patterns
 
 #### Follow call dataframe (CSV) against SLU service and export
 
