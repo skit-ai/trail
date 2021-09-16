@@ -42,7 +42,7 @@ type SLUResponse struct {
 			AlternativeIndex int           `json:"alternative_index"`
 			Parsers          []interface{} `json:"parsers"`
 			Score            float64       `json:"score"`
-			Slots            []interface{} `json:"slots"`
+			Slots            interface{} `json:"slots"`
 		} `json:"intents"`
 		// Entities []interface{} `json:"entities"`
 		// Intents  []interface{} `json:"intents"`
