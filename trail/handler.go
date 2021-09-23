@@ -44,11 +44,13 @@ func writeOutput(sluResponse []SLUResponse) {
 	if outputIntentsCsv != "" {
 		intentsFp, err := os.OpenFile(outputIntentsCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		defer intentsFp.Close()
+
 		intentsWriter = csv.NewWriter(intentsFp)
 		intentsHeader := []string{"id", "intent"}
 		if err := intentsWriter.Write(intentsHeader); err != nil {
 			log.Fatalln("Error writing record to file", err)
 		}
+
 		defer intentsWriter.Flush()
 		if err != nil {
 			panic(err)
@@ -57,7 +59,13 @@ func writeOutput(sluResponse []SLUResponse) {
 	if outputEntitiesCsv != "" {
 		entitiesFp, err := os.OpenFile(outputEntitiesCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		defer entitiesFp.Close()
+
 		entitiesWriter = csv.NewWriter(entitiesFp)
+		entitiesHeader := []string{"id", "entities"}
+		if err := entitiesWriter.Write(entitiesHeader); err != nil {
+			log.Fatalln("Error writing record to file", err)
+		}
+
 		defer entitiesWriter.Flush()
 		if err != nil {
 			panic(err)
