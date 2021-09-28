@@ -109,6 +109,11 @@ func writeOutput(sluResponse []SLUResponse) {
 			if err := entitiesWriter.Write(entitiesRecord); err != nil {
 				log.Fatalln("Error writing record to file", err)
 			}
+		} else if len(msg.Response.Entities) < 1 {
+			entitiesRecord := []string{msg.Uuid, ""}
+			if err := entitiesWriter.Write(entitiesRecord); err != nil {
+				log.Fatalln("Error writing record to file", err)
+			}
 		}
 	}
 }
