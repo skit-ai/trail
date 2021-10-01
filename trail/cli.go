@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +18,14 @@ var (
 )
 
 func main() {
+    // version
+	var version = &cobra.Command{
+		Use:   "version",
+		Short: "Show trail version",
+		Run: func(cmd *cobra.Command, args []string) {
+            fmt.Println("0.2.0")
+		},
+	}
 
 	// follow command
 	var cmdFollow = &cobra.Command{
@@ -48,5 +58,6 @@ func main() {
 	cmdFollow.PersistentFlags().StringVar(&recordType, "type", "untagged", "Type of record. One of: [tagged, untagged] (optional)")
 
 	rootCmd.AddCommand(cmdFollow)
+	rootCmd.AddCommand(version)
 	rootCmd.Execute()
 }
