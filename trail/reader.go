@@ -44,7 +44,7 @@ func (reader Reader) yamlReader() *pb.CallDataFrame {
 	return record
 }
 
-func (reader Reader) csvReader() ListRequests {
+func (reader Reader) csvReader(recordType string) ListRequests {
 	f, err := os.Open(reader.path)
 	if err != nil {
 		log.Fatal("Unable to read input file "+reader.path, err)
@@ -68,26 +68,45 @@ func (reader Reader) csvReader() ListRequests {
 		}
 
 		sluRequest := SLURequestBody{}
-
 		// Get alternatives
 		var data []interface{}
 		var alternatives string
-		if record[2] == "" {
-			alternatives = "[]"
-		} else {
-			alternatives = record[2]
-		}
 
-		err = json.Unmarshal([]byte(alternatives), &data)
-		if err != nil {
-			log.Fatal("error happened", err)
-		}
-		sluRequest.Alternatives = data
+		switch recordType {
+		case "untagged":
+			if record[2] == "" {
+				alternatives = "[]"
+			} else {
+				alternatives = record[2]
+			}
 
-		// Context
-		sluRequest.Context.CallUuid = record[0]
-		sluRequest.Context.CurrentState = record[6]
-		sluRequest.Context.Uuid = record[1]
+			err = json.Unmarshal([]byte(alternatives), &data)
+			if err != nil {
+				log.Fatal("error happened", err)
+			}
+			sluRequest.Alternatives = data
+
+			// Context
+			sluRequest.Context.CallUuid = record[0]
+			sluRequest.Context.CurrentState = record[6]
+			sluRequest.Context.Uuid = record[1]
+		case "tagged":
+			if record[1] == "" {
+				alternatives = "[[]]"
+			} else {
+				alternatives = record[1]
+			}
+			err = json.Unmarshal([]byte(alternatives), &data)
+			if err != nil {
+				log.Fatal("error happened", err)
+			}
+			sluRequest.Alternatives = data
+
+			// Context
+			sluRequest.Context.CallUuid = record[4]
+			sluRequest.Context.CurrentState = record[6]
+			sluRequest.Context.Uuid = record[12]
+		}
 
 		requests.RequestBody = append(requests.RequestBody, sluRequest)
 	}

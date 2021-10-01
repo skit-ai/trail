@@ -122,7 +122,7 @@ func writeOutput(sluResponse []SLUResponse) {
 func rootHandler(cmd *cobra.Command, args []string) {
 	defer panicHandler()
 	reader := Reader{path: inputCsv}
-	record := reader.csvReader()
+	record := reader.csvReader(recordType)
 	sluClient := NewSLUClient(sluHost)
 	outputChannel := make(chan SLUResponse)
 

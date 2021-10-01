@@ -11,6 +11,7 @@ var (
 	sluHost           string
 	sluClient         string
 	sluLanguage       string
+	recordType        string
 	maxGoroutines     int
 )
 
@@ -44,6 +45,7 @@ func main() {
 	cmdFollow.PersistentFlags().StringVar(&outputIntentsCsv, "output-intents-csv", "", "output intents csv file")
 	cmdFollow.PersistentFlags().StringVar(&outputEntitiesCsv, "output-entities-csv", "", "output entities csv file")
 	cmdFollow.PersistentFlags().IntVar(&maxGoroutines, "concurrency", 30, "Max concurrent requests to SLU service (optional)")
+	cmdFollow.PersistentFlags().StringVar(&recordType, "type", "untagged", "Type of record. One of: [tagged, untagged] (optional)")
 
 	rootCmd.AddCommand(cmdFollow)
 	rootCmd.Execute()
