@@ -29,6 +29,7 @@ Flags:
       --slu-client string            Name of the client (required)
       --slu-host string              http://host:port for SLU service (required)
       --slu-language string          Language code. Example: en, hi (required)
+      --type string                  Type of record. One of: [tagged, untagged] (optional) (default "untagged")
 ```
 
 ## Usage patterns
