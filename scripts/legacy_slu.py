@@ -27,20 +27,23 @@ def _generate_entity_labels(entities):
 
 
 def get_labeled_items(data, type_):
-    records = filter(lambda d: d["slu_response"]["response"].get(type_), data)
-
     with open(f"{BASE_PATH}/predicted.{type_}.csv", "w") as fp:
         print(f"{type_}")
         writer = csv.writer(fp)
         writer.writerow(columns_map[type_])
-        for record in records:
+        for record in data:
             label_func = label_func_map.get(type_)
-            writer.writerow([record["uuid"], label_func(record["slu_response"]["response"][type_])])
+            print(record["uuid"])
+            if record["slu_response"]["response"].get(type_):
+                label = label_func(record["slu_response"]["response"][type_])
+            else:
+                label = ""
+
+            writer.writerow([record["uuid"], label])
 
 
 if __name__ == "__main__":
     data = json.loads(sys.stdin.read())
-    print(data)
 
     BASE_PATH = "."
     label_func_map = {
