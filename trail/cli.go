@@ -14,16 +14,17 @@ var (
 	sluClient         string
 	sluLanguage       string
 	recordType        string
+	serviceType       string
 	maxGoroutines     int
 )
 
 func main() {
-    // version
+	// version
 	var version = &cobra.Command{
 		Use:   "version",
 		Short: "Show trail version",
 		Run: func(cmd *cobra.Command, args []string) {
-            fmt.Println("0.2.0")
+			fmt.Println("0.3.0")
 		},
 	}
 
@@ -56,6 +57,7 @@ func main() {
 	cmdFollow.PersistentFlags().StringVar(&outputEntitiesCsv, "output-entities-csv", "", "output entities csv file")
 	cmdFollow.PersistentFlags().IntVar(&maxGoroutines, "concurrency", 30, "Max concurrent requests to SLU service (optional)")
 	cmdFollow.PersistentFlags().StringVar(&recordType, "type", "untagged", "Type of record. One of: [tagged, untagged] (optional)")
+	cmdFollow.PersistentFlags().StringVar(&serviceType, "service-type", "dialogy", "SLU service type. One of: [dialogy, plute] (optional)")
 
 	rootCmd.AddCommand(cmdFollow)
 	rootCmd.AddCommand(version)

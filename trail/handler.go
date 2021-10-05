@@ -127,7 +127,8 @@ func rootHandler(cmd *cobra.Command, args []string) {
 	outputChannel := make(chan SLUResponse)
 
 	log.Println("Making requests to SLU service")
-	stdOutResponse := make([]SLUResponse, len(record.RequestBody))
+	trailResponse := make([]SLUResponse, len(record.RequestBody))
+	stdOutResponse := make([]CompleteResponse, len(record.RequestBody))
 
 	guard := make(chan struct{}, maxGoroutines)
 
@@ -135,8 +136,9 @@ func rootHandler(cmd *cobra.Command, args []string) {
 		wg.Add(1)
 		guard <- struct{}{} // would block if guard channel is already filled
 		go func(outputChannel chan SLUResponse, item SLURequestBody, idx int) {
-			sluResponse := sluClient.Predict(outputChannel, item)
-			stdOutResponse[idx] = sluResponse
+			sluResponse, responseString := sluClient.Predict(outputChannel, item)
+			trailResponse[idx] = sluResponse
+			stdOutResponse[idx] = responseString
 
 			defer wg.Done()
 			<-guard
@@ -144,7 +146,7 @@ func rootHandler(cmd *cobra.Command, args []string) {
 	}
 
 	wg.Wait()
-	writeOutput(stdOutResponse)
+	writeOutput(trailResponse)
 
 	jsonData, _ := json.MarshalIndent(stdOutResponse, "", "    ")
 	fmt.Println(string(jsonData))

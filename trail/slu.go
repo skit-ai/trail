@@ -19,6 +19,11 @@ type SLU struct {
 	HOST string
 }
 
+type CompleteResponse struct {
+	Uuid     string                 `json:"uuid"`
+	Response map[string]interface{} `json:"slu_response"`
+}
+
 type SLUResponse struct {
 	Uuid     string `json:"uuid"`
 	Response struct {
@@ -42,7 +47,7 @@ type SLUResponse struct {
 			AlternativeIndex int           `json:"alternative_index"`
 			Parsers          []interface{} `json:"parsers"`
 			Score            float64       `json:"score"`
-			Slots            interface{} `json:"slots"`
+			Slots            interface{}   `json:"slots"`
 		} `json:"intents"`
 		// Entities []interface{} `json:"entities"`
 		// Intents  []interface{} `json:"intents"`
@@ -56,13 +61,16 @@ func NewSLUClient(host string) *SLU {
 }
 
 // Call SLU service /predict/ endpoint
-func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) SLUResponse {
+func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLURequestBody) (SLUResponse, CompleteResponse) {
 	defer panicHandler()
 	jsonData, err := json.Marshal(sluRequestBody)
 	method := "POST"
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf(predict_api, slu.HOST, sluLanguage, sluClient)
 	sluResponse := SLUResponse{
+		Uuid: sluRequestBody.Context.Uuid,
+	}
+	completeResponse := CompleteResponse{
 		Uuid: sluRequestBody.Context.Uuid,
 	}
 
@@ -73,7 +81,7 @@ func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLUReques
 	response, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return sluResponse
+		return sluResponse, completeResponse
 	}
 	defer response.Body.Close()
 
@@ -83,12 +91,17 @@ func (slu *SLU) Predict(outputChannel chan SLUResponse, sluRequestBody SLUReques
 		log.Println(err)
 	}
 
+	var responseText map[string]interface{}
 	err = json.Unmarshal(body, &sluResponse)
+	err = json.Unmarshal(body, &responseText)
+
+	completeResponse.Response = responseText
+
 	if err != nil {
 		log.Println("Could not unmarshal", err)
 	}
 
 	// outputChannel <- sluResponse
 	// defer wg.Done()
-	return sluResponse
+	return sluResponse, completeResponse
 }
