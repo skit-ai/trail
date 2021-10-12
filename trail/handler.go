@@ -40,6 +40,9 @@ func panicHandler() {
 // writeOutput - Write output from SLU service to CSV
 func writeOutput(sluResponse []SLUResponse) {
 	var intentsWriter, entitiesWriter *csv.Writer
+	if outputEntitiesCsv == "" && outputIntentsCsv == "" {
+		return
+	}
 
 	if outputIntentsCsv != "" {
 		intentsFp, err := os.OpenFile(outputIntentsCsv, os.O_CREATE|os.O_WRONLY, os.ModePerm)
