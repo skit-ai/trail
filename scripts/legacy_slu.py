@@ -14,13 +14,22 @@ def _generate_entity_labels(entities):
     entity_list = []
     for entity in entities:
         values = entity.get("values", [{}])
-        value = values[0].get("value")
+        entity_value = values[0]
+        entity_type = entity_value.get("type")
+
+        if entity_type == "interval":
+            value = {
+                "from": {"value": entity_value["value"].get("from")},
+                "to": {"value": entity_value["value"].get("to")}
+            }
+        else:
+            value = entity_value
 
         entity_list.append(dict(
             text=entity.get("body"),
-            type=entity.get("type"),
+            type=entity_type,
             score=entity.get("score", 0),
-            value=entity.get("value", value),
+            value=value,
         ))
 
     return json.dumps(entity_list)
@@ -50,7 +59,7 @@ if __name__ == "__main__":
     }
     columns_map = {
         "intents": ["id", "intent"],
-        "aux_entities": ["id", "entity"],
+        "aux_entities": ["id", "entities"],
     }
 
     get_labeled_items(data, type_="intents")
