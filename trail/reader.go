@@ -23,6 +23,7 @@ type SLURequestBody struct {
 		CallUuid     string `json:"call_uuid"`
 		CurrentState string `json:"current_state"`
 		Uuid         string `json:"uuid"`
+		RefTime      string `json:"reftime"`
 	} `json:"context"`
 }
 
@@ -90,6 +91,7 @@ func (reader Reader) csvReader(recordType string) ListRequests {
 			sluRequest.Context.CallUuid = record[0]
 			sluRequest.Context.CurrentState = record[6]
 			sluRequest.Context.Uuid = record[1]
+			sluRequest.Context.RefTime = record[4]
 		case "tagged":
 			if record[1] == "" {
 				alternatives = "[[]]"
@@ -106,6 +108,7 @@ func (reader Reader) csvReader(recordType string) ListRequests {
 			sluRequest.Context.CallUuid = record[4]
 			sluRequest.Context.CurrentState = record[6]
 			sluRequest.Context.Uuid = record[12]
+			sluRequest.Context.RefTime = record[7]
 		}
 
 		requests.RequestBody = append(requests.RequestBody, sluRequest)
