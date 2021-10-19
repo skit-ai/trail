@@ -42,8 +42,8 @@ if __name__ == "__main__":
         "entities": _generate_entity_labels
     }
     columns_map = {
-        "intents": ["id", "preds"],
-        "entities": ["id", "entity"],
+        "intents": ["id", "intent"],
+        "entities": ["id", "entities"],
     }
 
     get_labeled_items(data, type_="intents")
