@@ -8,6 +8,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -134,6 +135,7 @@ func rootHandler(cmd *cobra.Command, args []string) {
 	stdOutResponse := make([]CompleteResponse, len(record.RequestBody))
 
 	guard := make(chan struct{}, maxGoroutines)
+	bar := progressbar.Default(int64(len(record.RequestBody)))
 
 	for idx, item := range record.RequestBody {
 		wg.Add(1)
@@ -142,6 +144,7 @@ func rootHandler(cmd *cobra.Command, args []string) {
 			sluResponse, responseString := sluClient.Predict(outputChannel, item)
 			trailResponse[idx] = sluResponse
 			stdOutResponse[idx] = responseString
+			bar.Add(1)
 
 			defer wg.Done()
 			<-guard
